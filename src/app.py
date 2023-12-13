@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Ciudad
 #from models import Person
 
 app = Flask(__name__)
@@ -31,19 +31,44 @@ setup_admin(app)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
+
+# INCIO DE CODIGO 
 # generate sitemap with all your endpoints
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
 
 @app.route('/user', methods=['GET'])
-def handle_hello():
+def get_user():
+    all_users = User.query.all()
+    print(all_users)
+    results = list(map(lambda user: user.serialize() ,all_users))
+    print(results)
+
 
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "msg": "debo leer todos los usuarios "
     }
 
-    return jsonify(response_body), 200
+    return jsonify(results), 200
+
+@app.route('/ciudad', methods=['GET'])
+def get_ciudades():
+    all_ciudades = Ciudad.query.all()
+    results = list(map(lambda item: item.serialize() ,all_ciudades))    
+
+    return jsonify(results), 200
+
+@app.route('/ciudad/<int:ciudad_id>', methods=['GET'])
+def get_ciudad(ciudad_id):
+    print(ciudad_id)
+    ciudad = Ciudad.query.filter_by(id=ciudad_id).first()
+    print(ciudad)
+    all_ciudades = Ciudad.query.all()
+    results = list(map(lambda item: item.serialize() ,all_ciudades))    
+
+    return jsonify(ciudad.serialize()), 200
+# FIN DE CODIGO 
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
