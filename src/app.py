@@ -68,6 +68,26 @@ def get_ciudad(ciudad_id):
     results = list(map(lambda item: item.serialize() ,all_ciudades))    
 
     return jsonify(ciudad.serialize()), 200
+
+@app.route('/ciudad', methods=['POST'])
+def crear_ciudad():
+    print('hola terminal')
+    # tarer los datos del post 
+    print(request)
+    print(request.get_json())
+    print(request.get_json()['nombre'])
+    nombre_ciudad = request.get_json()['nombre']
+    body = request.get_json()
+    # crear una ciudad en la bd
+    ciudad = Ciudad(**body)
+    # ciudad = Ciudad(nombre=body['nombre'],bandera=body['bandera'],himno=body['himno'] )
+    db.session.add(ciudad)
+    db.session.commit()
+    response_body = {
+        "msg": "debo crear ciudad"
+    }
+
+    return jsonify(response_body), 200
 # FIN DE CODIGO 
 
 # this only runs if `$ python src/app.py` is executed

@@ -24,6 +24,7 @@ class Ciudad(db.Model):
     nombre = db.Column(db.String(250), nullable=False)
     bandera = db.Column(db.String(250), nullable=False)
     himno = db.Column(db.String(250), nullable=False)
+    campeonatos = db.relationship('Campeonato', backref='ciudad', lazy=True)
 
     def __repr__(self):
         return '<Ciudad %r>' % self.nombre
@@ -34,5 +35,24 @@ class Ciudad(db.Model):
             "nombre": self.nombre,
             "bandera": self.bandera,
             "himno": self.himno,
+            # do not serialize the password, its a security breach
+        }
+
+class Campeonato(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(250), nullable=False)
+    premio = db.Column(db.String(250), nullable=False)
+    ciudad_id = db.Column(db.Integer, db.ForeignKey('ciudad.id'),
+        nullable=False)
+    
+
+    def __repr__(self):
+        return '<Campeonato %r>' % self.nombre
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "premio": self.premio
             # do not serialize the password, its a security breach
         }
